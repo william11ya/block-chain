@@ -48,13 +48,13 @@
 import json
 from web3 import Web3
 # Fill in your infura API key here
-w3 = Web3(Web3.HTTPProvider('HTTP://localhost:7545'))
+w3 = Web3(Web3.HTTPProvider('HTTP://172.20.224.1:7545'))
 
 w3.eth.default_account = w3.eth.accounts[0]
 
-compiled_contract_path = 'build/contracts/gfg.json'
+compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0x7A2377407203A779421e586935Eb293e04389C4f'
+deployed_contract_address = '0xB8831C820d2101ec08d4E0B321D2F391c58de716'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -63,10 +63,12 @@ with open(compiled_contract_path) as file:
 contract = w3.eth.contract(
     address = deployed_contract_address, abi = contract_abi)
 
-output = contract.functions.geeks().call()
- 
-print(type(output))
-print(output)
+#create = contract.functions.CreateVote("學生會2",["A","B"],2000).transact() 
+#runcreater = w3.eth.wait_for_transaction_receipt(create)
+exist = contract.functions.getVoteIndex("學生").call()
+
+print(type(exist))
+print(exist)
 
 print(w3.is_connected())
 

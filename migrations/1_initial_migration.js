@@ -4,8 +4,8 @@ module.exports = function(deployer) {
   deployer.deploy(Migrations);
 };
 
-var gfg = artifacts.require("gfg");
+var VotingSystem = artifacts.require("VotingSystem");
  
 module.exports = function(deployer) {
-    deployer.deploy(gfg);
+    deployer.deploy(VotingSystem);
 };
