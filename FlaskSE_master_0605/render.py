@@ -85,12 +85,10 @@ def add_vote2_people():
         global vote_people
         global vote_count
         
-        name_array=[]
         for i in range(int(vote_count)):
             num=i+1
             name="name"+str(num)
             vote_people[name]=request.form[name]
-            name_array.append(request.form[name])
 
         return render_template('test_view/add_vote1.html',text=ID)
     else:
