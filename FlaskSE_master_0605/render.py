@@ -1,6 +1,9 @@
+import array
+import time
 from flask import Flask, render_template, request, redirect, url_for
 import json
 from web3 import Web3
+from datetime import datetime
 
 w3 = Web3(Web3.HTTPProvider('HTTP://172.20.224.1:7545'))
 
@@ -8,7 +11,7 @@ w3.eth.default_account = w3.eth.accounts[0]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0x24733aad54221517DFc7d891bE0d577dc48ABf14'
+deployed_contract_address = '0xB580afa2c6DB707B8f0E2C4FF2DB613b7C9a34f2'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -26,23 +29,36 @@ def getVoteIndex(voteName):
     return exist
 
 def settle(voteId):
-    Settle = contract.functions.settle(voteId)
+    Settle = contract.functions.settle(voteId).call()
     return Settle
 
 def getAllRunningVote():
-    get = contract.functions.getAllRunningVote()
+    get = contract.functions.getAllRunningVote().call()
     return get
 
 def getAllCandidateName(voteId):
-    get = contract.functions.getAllCandidateName(voteId)
+    get = contract.functions.getAllCandidatesName(voteId).call()
     return get
 
 def getEndTime(voteId):
-    get = contract.functions.getEndTime(voteId)
+    get = contract.functions.getEndTime(voteId).call()
     return get
 
 def vote(voteId, candidateIndex):
-    votecandidate = contract.functions.vote(voteId, candidateIndex)
+    votecandidate = contract.functions.vote(voteId, candidateIndex).transact()
+    runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
+
+def getVoteInfo():
+    a = []
+    Name = contract.functions.getAllRunningVote().call()
+    for x in Name:
+        temp = []
+        index = contract.functions.getVoteIndex(x).call()
+        time = contract.functions.getEndTime(index).call()
+        temp = [index,x,time]
+        a.append(temp)
+    print(a)
+    return a
 
 app = Flask(__name__)
 
@@ -66,7 +82,10 @@ def success(name, action):
 @app.route('/manage_users')
 def manage_users():
     global ID
-    return render_template('test_view/manage-users.html',text=ID)
+    Vote = getAllRunningVote()
+    print(Vote)
+    getVoteInfo()
+    return render_template('test_view/manage-users.html', text=ID, Vote = Vote)
 
 @app.route('/preferences')
 def preferences():
@@ -81,8 +100,6 @@ def login():
 @app.route('/add_vote1')
 def add_vote1():
     global ID
-    CreateVote("ssss",["a","v"],1000)
-    print(getVoteIndex("ssss"))
     return render_template('test_view/add_vote1.html',text=ID)
 
 @app.route('/add_vote2')
@@ -119,6 +136,10 @@ def add_vote2_data():
             num=i+1
             name="name"+str(num)
             vote_people[name]=""
+        
+        endtime = str(vote_content['End_Date']+ ' ' +vote_content['End_Time'])
+        epoch = datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
+        print(int(epoch))
 
         return render_template('test_view/add_vote2.html', content=vote_content,text=ID,vote_people=vote_people)
     else:
@@ -130,14 +151,20 @@ def add_vote2_people():
     if request.method == "POST":
         global vote_people
         global vote_count
-        
+        global vote_content
+
         name_array=[]
         for i in range(int(vote_count)):
             num=i+1
             name="name"+str(num)
             vote_people[name]=request.form[name]
             name_array.append(request.form[name])
-
+        
+        endtime = str(vote_content['End_Date']+ ' ' +vote_content['End_Time'])
+        epoch = datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
+        print(epoch)
+        CreateVote(vote_content["Vote_Name"],name_array,int(epoch))
+        
         return render_template('test_view/add_vote1.html',text=ID)
     else:
         return render_template('test_view/add_vote1.html',text=ID)
@@ -145,11 +172,17 @@ def add_vote2_people():
 @app.route('/student_vote')
 def student_vote():
     global ID
-    return render_template('test_view/student_vote.html',text=ID)
+    global Index
+    Index = getVoteIndex("WW")
+    candidate = getAllCandidateName(Index)
+    print(candidate)
+    return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,Index = Index)
 
 @app.route('/manage_users',methods=['POST','GET'])
 def student_vote2():
     global ID
+    global Index
+    vote(Index,ID)
     return render_template('test_view/manage-users.html',text=ID)
 
 #----------------------------------------------------------------------

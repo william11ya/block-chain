@@ -1,13 +1,14 @@
+import json
 from web3 import Web3
 
 # Fill in your infura API key here
 w3 = Web3(Web3.HTTPProvider('HTTP://172.20.224.1:7545'))
 
-w3.eth.default_account = w3.eth.accounts[0]
+w3.eth.default_account = w3.eth.accounts[4]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0xFa4DeC91f513cdBd7Cf22089a51da0C646e6775b'
+deployed_contract_address = '0xB580afa2c6DB707B8f0E2C4FF2DB613b7C9a34f2'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -21,13 +22,23 @@ def CreateVote(voteName, candidateNames, endTime):
     runCreate = w3.eth.wait_for_transaction_receipt(Create)
 
 def getVoteIndex(voteName):
-    exist = contract.functions.getVoteIndex("學生").call()
+    exist = contract.functions.getVoteIndex("").call()
     return exist
 
+def getAllRunningVote():
+    get = contract.functions.getAllRunningVote().call()
+    return get
 
+votecandidate = contract.functions.vote(0, 1).transact()
+runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
+# Settle = contract.functions.settle(0).call()
+x = getAllRunningVote()
+for i in x:
+    print(i)
+
+# runCreate = w3.eth.wait_for_transaction_receipt(Create)
 #create = contract.functions.CreateVote("學生會2",["A","B"],2000).transact() 
 #runcreater = w3.eth.wait_for_transaction_receipt(create)
-print(type(exist))
-print(exist)
 
 print(w3.is_connected())
+
