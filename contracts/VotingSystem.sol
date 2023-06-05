@@ -91,7 +91,7 @@ contract VotingSystem {
         // 返回获胜的候选人名称
         return voteEvents[voteId].candidates[winningCandidateIndex].name;
     }
-    
+
     string[] Tmp;
     function getAllRunningVote() public returns (string[] memory) {
         delete Tmp;
@@ -106,11 +106,17 @@ contract VotingSystem {
     }
 
     function getAllCandidatesName(uint voteId) public returns (string[] memory) {
+        require(voteId <= index - 1, "Vote ID out of range");
         delete Tmp;
         for (uint i = 0; i < voteEvents[voteId].candidates.length; i++) 
         {
             Tmp.push(voteEvents[voteId].candidates[i].name);
         }
         return Tmp;
+    }
+
+    function getEndTime(uint voteId) public view returns (uint) {
+        require(voteId <= index - 1, "Vote ID out of range");
+        return voteEvents[voteId].voteEndTime;
     }
 }
