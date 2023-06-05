@@ -91,4 +91,26 @@ contract VotingSystem {
         // 返回获胜的候选人名称
         return voteEvents[voteId].candidates[winningCandidateIndex].name;
     }
+    
+    string[] Tmp;
+    function getAllRunningVote() public returns (string[] memory) {
+        delete Tmp;
+        for (uint i = 0; i < index; i++) 
+        {
+            if(voteEvents[i].voteEndTime > block.timestamp)
+            {
+                Tmp.push(voteEvents[i].voteName);
+            }
+        }
+        return Tmp;
+    }
+
+    function getAllCandidatesName(uint voteId) public returns (string[] memory) {
+        delete Tmp;
+        for (uint i = 0; i < voteEvents[voteId].candidates.length; i++) 
+        {
+            Tmp.push(voteEvents[voteId].candidates[i].name);
+        }
+        return Tmp;
+    }
 }
