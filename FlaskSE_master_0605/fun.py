@@ -7,7 +7,7 @@ w3.eth.default_account = w3.eth.accounts[0]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0x413dE109342A40b368E48BfDebBC773AF3961d19'
+deployed_contract_address = '0xFa4DeC91f513cdBd7Cf22089a51da0C646e6775b'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)

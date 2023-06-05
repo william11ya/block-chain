@@ -1,4 +1,48 @@
 from flask import Flask, render_template, request, redirect, url_for
+import json
+from web3 import Web3
+
+w3 = Web3(Web3.HTTPProvider('HTTP://172.20.224.1:7545'))
+
+w3.eth.default_account = w3.eth.accounts[0]
+
+compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
+
+deployed_contract_address = '0x24733aad54221517DFc7d891bE0d577dc48ABf14'
+
+with open(compiled_contract_path) as file:
+    contract_json = json.load(file)
+    contract_abi = contract_json['abi']
+
+contract = w3.eth.contract(
+    address = deployed_contract_address, abi = contract_abi)
+
+def CreateVote(voteName, candidateNames, endTime):
+    Create = contract.functions.CreateVote(voteName, candidateNames, endTime).transact()
+    runCreate = w3.eth.wait_for_transaction_receipt(Create)
+
+def getVoteIndex(voteName):
+    exist = contract.functions.getVoteIndex(voteName).call()
+    return exist
+
+def settle(voteId):
+    Settle = contract.functions.settle(voteId)
+    return Settle
+
+def getAllRunningVote():
+    get = contract.functions.getAllRunningVote()
+    return get
+
+def getAllCandidateName(voteId):
+    get = contract.functions.getAllCandidateName(voteId)
+    return get
+
+def getEndTime(voteId):
+    get = contract.functions.getEndTime(voteId)
+    return get
+
+def vote(voteId, candidateIndex):
+    votecandidate = contract.functions.vote(voteId, candidateIndex)
 
 app = Flask(__name__)
 
@@ -37,6 +81,8 @@ def login():
 @app.route('/add_vote1')
 def add_vote1():
     global ID
+    CreateVote("ssss",["a","v"],1000)
+    print(getVoteIndex("ssss"))
     return render_template('test_view/add_vote1.html',text=ID)
 
 @app.route('/add_vote2')
@@ -108,4 +154,4 @@ def student_vote2():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host="0.0.0.0",port=5000)
+    app.run(host="0.0.0.0",port=5000, debug = True)
