@@ -55,7 +55,6 @@
       </div>
       <!-- Main content -->
       <div class="templatemo-content col-1 light-gray-bg">
-        
         <div class="templatemo-content-container">
           <div class="templatemo-content-widget white-bg">
             <h2 class="margin-bottom-10">學生投票</h2>
@@ -67,19 +66,19 @@
                     <input type="text" class="form-control" id="vote_name" value="學生會長選舉" disabled>
                 </div>
               </div>
-
+              <input type="text" id="index" name="index" value="{{index}}" hidden>
               <div class="row form-group">
                 
                 <div class="col-lg-12 col-md-12 form-group">
                   <div>
-                    <label class="control-label templatemo-block">選舉候選人</label> 
+                    <label class="control-label templatemo-block">選舉候選人</label>   
                     {% for i in candidate %}   
                     {% set str=loop.index|string %}
                     <div class="templatemo-block margin-bottom-5">
                       <input type="radio" name="voteOptions" id="{{str}}" value="{{i}}">
                       <label for="{{str}}" class="font-weight-400"><span></span>{{i}}</label>
                     </div>  
-                    {% endfor %}                  
+                    {% endfor %}          
                   </div>                  
                 </div> 
               </div>
