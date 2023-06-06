@@ -55,7 +55,7 @@ contract VotingSystem {
 
     //測試用fuction，我沒有辦法用js寫加快時間的測試
     function speedTimeForTestingOnly(uint voteId) public {        
-        voteEvents[voteId].voteEndTime -= 2000;
+        voteEvents[voteId].voteEndTime = 0;
     }
 
     function vote(uint voteId, uint candidateIndex) public {
