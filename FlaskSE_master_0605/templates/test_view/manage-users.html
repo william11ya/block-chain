@@ -70,20 +70,16 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {% for i in VoteInfo %}
                   <tr>
-                    <td>1.</td>
-                    <td>學生會長選舉</td>
-                    <td>2023-06-30</td>
-                    <td>23:59:00</td>
-                    <td><a href="{{ url_for('student_vote') }}" class="templatemo-edit-btn">我要投票</a></td>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td>{{ i[3] }}</td>
+                    {% set str=loop.index0|string %}
+                    <td><a href="{{ url_for('student_vote',index=str) }}" class="templatemo-edit-btn">我要投票</a></td>
                   </tr>
-                  <tr>
-                    <td>2.</td>
-                    <td>籃球隊長選舉</td>
-                    <td>2023-07-30</td>
-                    <td>20:30:00</td>
-                    <td><a href="{{ url_for('student_vote') }}" class="templatemo-edit-btn">我要投票</a></td>
-                  </tr>  
+                  {% endfor %} 
                 </tbody>
               </table>    
             </div>                          
