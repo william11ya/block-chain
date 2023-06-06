@@ -49,7 +49,8 @@ def vote(voteId, candidateIndex):
     runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
 
 def speedTime(voteId):
-    speed = content.functions.speedTimeForTestingOnly(voteId).call()
+    speed = contract.functions.speedTimeForTestingOnly(voteId).transact()
+    runspeed = w3.eth.wait_for_transaction_receipt(speed)
 
 def getVoteInfo():
     a = []
@@ -86,16 +87,22 @@ def success(name, action):
 @app.route('/manage_users')
 def manage_users():
     global ID
+    info = getVoteInfo()
+    now = int(time.time())
+    for x in info:
+        if x[2] != 0 and x[2] <= now:
+            speedTime(int(x[0]))
+            print(x[0])
+
     Vote = getAllRunningVote()
     print(Vote)
     info = getVoteInfo()
     now = int(time.time())
     VoteInfo = []
     for x in info:
-        if x[2] > now:
-            temp = datetime.datetime.fromtimestamp(x[2])
-            x[2] = str(temp)
-            VoteInfo.append(x)
+        temp = datetime.datetime.fromtimestamp(x[2])
+        x[2] = str(temp)
+        VoteInfo.append(x)
     print(VoteInfo)
     return render_template('test_view/manage-users.html', text=ID, VoteInfo = info)
 
@@ -177,7 +184,7 @@ def add_vote2_people():
     else:
         return render_template('test_view/add_vote1.html',text=ID)
 
-@app.route('/student_vote')
+@app.route('/student_vote') 
 def student_vote():
     global ID
     global Index
@@ -192,6 +199,26 @@ def student_vote2():
     global Index
     vote(Index,ID)
     return render_template('test_view/manage-users.html',text=ID)
+
+@app.route('/winner_candidate')
+def winner_candidate():
+    info = getVoteInfo()
+    now = time.time()
+    temp = []
+    for x in info:
+        if x[2] != 0 and x[2] <= now:
+            speedTime(x[0])
+    
+    Vote = getAllRunningVote()
+    print(Vote)
+    info = getVoteInfo()
+    now = int(time.time())
+    endVote = []
+    for x in info:
+        if x[2] == 0:
+            endVote.append(x)
+    print(endVote)
+    return render_template('/test_view/winner_candidate.html', endVote = endVote)
 
 #----------------------------------------------------------------------
 
