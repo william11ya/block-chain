@@ -119,4 +119,16 @@ contract VotingSystem {
         require(voteId <= index - 1, "Vote ID out of range");
         return voteEvents[voteId].voteEndTime;
     }
+    
+    function getAllEndedVote() public returns (string[] memory) {
+        delete Tmp;
+        for (uint i = 0; i < index; i++) 
+        {
+            if(voteEvents[i].voteEndTime < block.timestamp)
+            {
+                Tmp.push(voteEvents[i].voteName);
+            }
+        }
+        return Tmp;
+    }
 }
