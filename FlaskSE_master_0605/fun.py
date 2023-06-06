@@ -8,7 +8,7 @@ w3.eth.default_account = w3.eth.accounts[4]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0xB580afa2c6DB707B8f0E2C4FF2DB613b7C9a34f2'
+deployed_contract_address = '0x4F3859C14be08c0274739D589Dcb9C4B970B42E2'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -26,12 +26,13 @@ def getVoteIndex(voteName):
     return exist
 
 def getAllRunningVote():
-    get = contract.functions.getAllRunningVote().call()
+    get = contract.functions.getAllEndedVote().call()
     return get
 
-votecandidate = contract.functions.vote(0, 1).transact()
-runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
+#votecandidate = contract.functions.vote(0, 1).transact()
+#runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
 # Settle = contract.functions.settle(0).call()
+
 x = getAllRunningVote()
 for i in x:
     print(i)

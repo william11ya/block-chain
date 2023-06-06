@@ -11,7 +11,7 @@ w3.eth.default_account = w3.eth.accounts[0]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0x0FD51213aeB0C78AEbD5fCFe40B7641bC7F9224f'
+deployed_contract_address = '0x4F3859C14be08c0274739D589Dcb9C4B970B42E2'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -65,7 +65,7 @@ def getVoteInfo():
     return a
 
 def getAllEndVote():
-    get = contract.functions.getAllEndVote().call()
+    get = contract.functions.getAllEndedVote().call()
     return get
 
 app = Flask(__name__)
@@ -105,7 +105,10 @@ def manage_users():
     VoteInfo = []
     for x in info:
         temp = datetime.datetime.fromtimestamp(x[2])
-        x[2] = str(temp)
+        dt = datetime.datetime.strptime(str(temp), '%Y-%m-%d %H:%M:%S')
+        dtt = str(dt).split(' ')
+        x[2] = (dtt[0])
+        x.append(dtt[1])
         VoteInfo.append(x)
     print(VoteInfo)
     return render_template('test_view/manage-users.html', text=ID, VoteInfo = info)
@@ -157,7 +160,7 @@ def add_vote2_data():
             vote_people[name]=""
         
         endtime = str(vote_content['End_Date']+ ' ' +vote_content['End_Time'])
-        epoch = datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
+        epoch = datetime.datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
         print(int(epoch))
 
         return render_template('test_view/add_vote2.html', content=vote_content,text=ID,vote_people=vote_people)
@@ -180,7 +183,7 @@ def add_vote2_people():
             name_array.append(request.form[name])
         
         endtime = str(vote_content['End_Date']+ ' ' +vote_content['End_Time'])
-        epoch = datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
+        epoch = datetime.datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
         print(epoch)
         CreateVote(vote_content["Vote_Name"],name_array,int(epoch))
         
@@ -213,23 +216,22 @@ def student_vote2():
 
 @app.route('/winner_candidate')
 def winner_candidate():
+    global ID
+
     info = getVoteInfo()
     now = time.time()
-    temp = []
+    endVote = []
     for x in info:
         if x[2] != 0 and x[2] <= now:
             speedTime(x[0])
     
-    EndVote = getAllEndVote()
-    print(EndVote)
-    info = getVoteInfo()
-    now = int(time.time())
-    endVote = []
-    for x in info:
-        if x[2] == 0:
-            endVote.append(x)
-    print(endVote)
-    return render_template('/test_view/winner_candidate.html', endVote = endVote)
+    temp = getAllEndVote()
+    for x in temp:
+        name = contract.functions.getVoteName(x).call()
+        winner = settle(x)
+        endVote.append([x,name,winner])        
+
+    return render_template('/test_view/winner_candidate.html', text = ID ,endVote = endVote)
 
 #----------------------------------------------------------------------
 
