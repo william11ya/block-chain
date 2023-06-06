@@ -3,7 +3,7 @@ import time
 from flask import Flask, render_template, request, redirect, url_for
 import json
 from web3 import Web3
-from datetime import datetime
+import datetime
 
 w3 = Web3(Web3.HTTPProvider('HTTP://172.20.224.1:7545'))
 
@@ -89,6 +89,14 @@ def manage_users():
     Vote = getAllRunningVote()
     print(Vote)
     info = getVoteInfo()
+    now = int(time.time())
+    VoteInfo = []
+    for x in info:
+        if x[2] > now:
+            temp = datetime.datetime.fromtimestamp(x[2])
+            x[2] = str(temp)
+            VoteInfo.append(x)
+    print(VoteInfo)
     return render_template('test_view/manage-users.html', text=ID, VoteInfo = info)
 
 @app.route('/preferences')
@@ -120,17 +128,13 @@ def add_vote2_data():
         
         vote_name=request.form['vote_name']
         vote_count=request.form['vote_count']
-        startdate=request.form['startdate']
         enddate=request.form['enddate']
-        starttime=request.form['starttime']
         endtime=request.form['endtime']
     
         vote_content={
             'Vote_Name': vote_name,
             'Vote_Count': vote_count,
-            'Start_Date': startdate,
             'End_Date': enddate,
-            'Start_Time': starttime,
             'End_Time': endtime
         }
 
