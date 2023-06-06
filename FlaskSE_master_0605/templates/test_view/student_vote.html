@@ -75,7 +75,7 @@
                     {% for i in candidate %}   
                     {% set str=loop.index|string %}
                     <div class="templatemo-block margin-bottom-5">
-                      <input type="radio" name="voteOptions" id="{{str}}" value="{{i}}">
+                      <input type="radio" name="voteOptions" id="{{str}}" value="{{loop.index0|string}}">
                       <label for="{{str}}" class="font-weight-400"><span></span>{{i}}</label>
                     </div>  
                     {% endfor %}          
