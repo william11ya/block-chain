@@ -93,6 +93,7 @@ contract VotingSystem {
     }
 
     string[] Tmp;
+    uint[] TmpInt;
     function getAllRunningVote() public returns (string[] memory) {
         delete Tmp;
         for (uint i = 0; i < index; i++) 
@@ -120,15 +121,19 @@ contract VotingSystem {
         return voteEvents[voteId].voteEndTime;
     }
     
-    function getAllEndedVote() public returns (string[] memory) {
-        delete Tmp;
+    function getAllEndedVote() public returns (uint[] memory) {
+        delete TmpInt;
         for (uint i = 0; i < index; i++) 
         {
             if(voteEvents[i].voteEndTime < block.timestamp)
             {
-                Tmp.push(voteEvents[i].voteName);
+                TmpInt.push(i);
             }
         }
-        return Tmp;
+        return TmpInt;
+    }
+
+    function getVoteName(uint voteId) public view returns (string memory) {
+        return voteEvents[voteId].voteName;
     }
 }
