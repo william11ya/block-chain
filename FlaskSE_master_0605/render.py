@@ -64,6 +64,10 @@ def getVoteInfo():
     print(a)
     return a
 
+def getAllEndVote():
+    get = contract.functions.getAllEndVote().call()
+    return get
+
 app = Flask(__name__)
 
 ID=""
@@ -184,20 +188,27 @@ def add_vote2_people():
     else:
         return render_template('test_view/add_vote1.html',text=ID)
 
-@app.route('/student_vote') 
-def student_vote():
+@app.route('/student_vote/<index>') 
+def student_vote(index):
     global ID
-    global Index
-    Index = getVoteIndex("ww")
-    candidate = getAllCandidateName(Index)
-    print(candidate)
-    return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,Index = Index)
+    #Index = getVoteIndex("ww")
+    candidate = getAllCandidateName(int(index))
+    print(index)
+    return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,index = index)
 
 @app.route('/manage_users',methods=['POST','GET'])
 def student_vote2():
     global ID
-    global Index
-    vote(Index,ID)
+    index=request.form['index']
+    voteOptions=request.form['voteOptions']
+    
+    w3.eth.default_account = w3.eth.accounts[1]
+    try:
+        vote(index,voteOptions)
+    except:
+        print("You hava already vote.")
+    w3.eth.default_account = w3.eth.accounts[0]
+    
     return render_template('test_view/manage-users.html',text=ID)
 
 @app.route('/winner_candidate')
@@ -209,8 +220,8 @@ def winner_candidate():
         if x[2] != 0 and x[2] <= now:
             speedTime(x[0])
     
-    Vote = getAllRunningVote()
-    print(Vote)
+    EndVote = getAllEndVote()
+    print(EndVote)
     info = getVoteInfo()
     now = int(time.time())
     endVote = []
