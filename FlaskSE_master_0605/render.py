@@ -11,7 +11,7 @@ w3.eth.default_account = w3.eth.accounts[0]
 
 compiled_contract_path = '/home/william11ya/IPad/block-chain/build/contracts/VotingSystem.json'
 
-deployed_contract_address = '0xB580afa2c6DB707B8f0E2C4FF2DB613b7C9a34f2'
+deployed_contract_address = '0x0FD51213aeB0C78AEbD5fCFe40B7641bC7F9224f'
 
 with open(compiled_contract_path) as file:
     contract_json = json.load(file)
@@ -48,6 +48,9 @@ def vote(voteId, candidateIndex):
     votecandidate = contract.functions.vote(voteId, candidateIndex).transact()
     runvotecandidate = w3.eth.wait_for_transaction_receipt(votecandidate)
 
+def speedTime(voteId):
+    speed = content.functions.speedTimeForTestingOnly(voteId).call()
+
 def getVoteInfo():
     a = []
     Name = contract.functions.getAllRunningVote().call()
@@ -69,6 +72,7 @@ def index():
     global ID
     return render_template('test_view/index.html',text=ID)
 
+
 @app.route('/index',methods=['POST'])
 def index_login():
     global ID
@@ -84,8 +88,8 @@ def manage_users():
     global ID
     Vote = getAllRunningVote()
     print(Vote)
-    getVoteInfo()
-    return render_template('test_view/manage-users.html', text=ID, Vote = Vote)
+    info = getVoteInfo()
+    return render_template('test_view/manage-users.html', text=ID, VoteInfo = info)
 
 @app.route('/preferences')
 def preferences():
@@ -173,7 +177,7 @@ def add_vote2_people():
 def student_vote():
     global ID
     global Index
-    Index = getVoteIndex("WW")
+    Index = getVoteIndex("ww")
     candidate = getAllCandidateName(Index)
     print(candidate)
     return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,Index = Index)
