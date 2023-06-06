@@ -77,7 +77,7 @@
                     <td>{{ i[1] }}</td>
                     <td>{{ i[2] }}</td>
                     <td>{{ i[3] }}</td>
-                    {% set str=loop.index0|string %}
+                    {% set str=i[0]|string %}
                     <td><a href="{{ url_for('student_vote',index=str) }}" class="templatemo-edit-btn">我要投票</a></td>
                   </tr>
                   {% endfor %} 
