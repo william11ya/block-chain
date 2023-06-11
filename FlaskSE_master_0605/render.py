@@ -68,6 +68,10 @@ def getAllEndVote():
     get = contract.functions.getAllEndedVote().call()
     return get
 
+def getVoteName():
+    get = contract.functions.getVoteName().call()
+    return get
+
 app = Flask(__name__)
 
 ID=""
@@ -82,7 +86,16 @@ def index():
 def index_login():
     global ID
     ID=request.form['ID']
-    return redirect(url_for('success', name=ID, action="post"))
+    if(ID == "sd1"):
+        w3.eth.default_account = w3.eth.accounts[1]
+    elif(ID == "sd2"):
+        w3.eth.default_account = w3.eth.accounts[2]
+    elif(ID == "admin"):
+        w3.eth.default_account = w3.eth.accounts[0]
+    else:
+        w3.eth.default_account = w3.eth.accounts[3]
+
+    return redirect(url_for("success", name=ID, action="post"))
 
 @app.route('/success/<action>/<name>')
 def success(name, action):
@@ -170,11 +183,12 @@ def add_vote2_data():
 @app.route('/add_vote1',methods=['POST','GET'])
 def add_vote2_people():
     global ID
+    w3.eth.default_account = w3.eth.accounts[0]
     if request.method == "POST":
         global vote_people
         global vote_count
         global vote_content
-
+        
         name_array=[]
         for i in range(int(vote_count)):
             num=i+1
@@ -184,7 +198,8 @@ def add_vote2_people():
         
         endtime = str(vote_content['End_Date']+ ' ' +vote_content['End_Time'])
         epoch = datetime.datetime.strptime(str(endtime), '%Y-%m-%d %H:%M').timestamp() - time.time()
-        print(epoch)
+        print(vote_content['Vote_Name'], vote_content['Vote_Count'])
+        print(epoch, name_array)
         CreateVote(vote_content["Vote_Name"],name_array,int(epoch))
         
         return render_template('test_view/add_vote1.html',text=ID)
@@ -205,23 +220,36 @@ def student_vote(index):
 @app.route('/manage_users',methods=['POST','GET'])
 def student_vote2():
     global ID
-    index=request.form['index']
-    voteOptions=request.form['voteOptions']
+    index=int(request.form['index'])
+    voteOptions=int(request.form['voteOptions'])
     VoteCheck = 0
-    w3.eth.default_account = w3.eth.accounts[1]
     try:
+        VoteCheck = 2
         vote(index,voteOptions)
     except:
         print("You hava already vote.")
         VoteCheck = 1
-    w3.eth.default_account = w3.eth.accounts[0]
-    
-    return render_template('test_view/manage-users.html', text=ID, VoteCheck = VoteCheck)
+
+    print(VoteCheck)
+
+    info = getVoteInfo()
+    now = int(time.time())
+    VoteInfo = []
+    for x in info:
+        temp = datetime.datetime.fromtimestamp(x[2])
+        dt = datetime.datetime.strptime(str(temp), '%Y-%m-%d %H:%M:%S')
+        dtt = str(dt).split(' ')
+        x[2] = (dtt[0])
+        x.append(dtt[1])
+        VoteInfo.append(x)
+    print(VoteInfo)
+
+
+    return render_template('test_view/manage-users.html', text=ID, VoteCheck = VoteCheck, VoteInfo = VoteInfo)
 
 @app.route('/winner_candidate')
 def winner_candidate():
     global ID
-
     info = getVoteInfo()
     now = time.time()
     endVote = []
