@@ -207,15 +207,16 @@ def student_vote2():
     global ID
     index=request.form['index']
     voteOptions=request.form['voteOptions']
-    
+    VoteCheck = 0
     w3.eth.default_account = w3.eth.accounts[1]
     try:
         vote(index,voteOptions)
     except:
         print("You hava already vote.")
+        VoteCheck = 1
     w3.eth.default_account = w3.eth.accounts[0]
     
-    return render_template('test_view/manage-users.html',text=ID)
+    return render_template('test_view/manage-users.html', text=ID, VoteCheck = VoteCheck)
 
 @app.route('/winner_candidate')
 def winner_candidate():
