@@ -197,7 +197,10 @@ def student_vote(index):
     #Index = getVoteIndex("ww")
     candidate = getAllCandidateName(int(index))
     print(index)
-    return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,index = index)
+    print(candidate)
+    Name = contract.functions.getVoteName(int(index)).call()
+    print(Name)
+    return render_template('test_view/student_vote.html',text=ID ,candidate = candidate ,index = index, VoteName = Name)
 
 @app.route('/manage_users',methods=['POST','GET'])
 def student_vote2():
